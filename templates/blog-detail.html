@@ -1,7 +1,7 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 {% block content %}
-        <!-- Blog Details Hero Begin -->
+    <!-- Blog Details Hero Begin -->
     <section class="blog-hero spad">
         <div class="container">
             <div class="row d-flex justify-content-center">
@@ -58,51 +58,81 @@
                                 <div class="col-lg-6 col-md-6 col-sm-6">
                                     <div class="blog__details__tags">
                                         {% for tag in object.tags.all %}
-                                            <a href="#">#{{ tag.title }}</a>
+                                            <a href="{% url 'blog:list' %}?tag={{ tag.title }}">#{{ tag.title }}</a>
                                         {% endfor %}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="blog__details__btns">
-                            <div class="row">
-                                <div class="col-lg-6 col-md-6 col-sm-6">
-                                    <a href="" class="blog__details__btns__item">
-                                        <p><span class="arrow_left"></span> Previous Pod</p>
-                                        <h5>It S Classified How To Utilize Free Classified Ad Sites</h5>
-                                    </a>
-                                </div>
-                                <div class="col-lg-6 col-md-6 col-sm-6">
-                                    <a href="" class="blog__details__btns__item blog__details__btns__item--next">
-                                        <p>Next Pod <span class="arrow_right"></span></p>
-                                        <h5>Tips For Choosing The Perfect Gloss For Your Lips</h5>
-                                    </a>
+                            <br>
+                            <div class="blog__details__btns">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                        {% if object.get_previous_by_created_at %}
+                                            <a href="{% url 'blog:detail' pk=object.get_previous_by_created_at.pk %}"
+                                               class="blog__details__btns__item">
+                                                <p><span class="arrow_left"></span> Previous Pod</p>
+                                                <h5>{{ object.get_previous_by_created_at.title }}</h5>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-6">
+                                        {% if object.get_next_by_created_at %}
+                                            <a href="{% url 'blog:detail' pk=object.get_next_by_created_at.pk %}"
+                                               class="blog__details__btns__item blog__details__btns__item--next">
+                                                <p>Next Pod <span class="arrow_right"></span></p>
+                                                <h5>{{ object.get_next_by_created_at.title }}</h5>
+                                            </a>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="blog__details__comment">
+                            <div id="comment-section" class="row">
+                                <div class="col-md-12 col-sm-12">
+                                    <ul>
+                                        {% for comment in object.comments.all %}
+                                            <li class="media">
+                                                `
+                                                <div class="media-body">
+                                            <span class="text-muted pull-right">
+                                                <small class="text-muted">
+                                                    {{ comment.created_at|timesince }}
+                                                </small>
+                                            </span>
+                                                    <strong>{{ comment.name }}</strong>
+                                                    <p>
+                                                        {{ comment.message }}
+                                                    </p>
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                           <div class="blog__details__comment">
                             <h4>Leave A Comment</h4>
-                            <form action="#">
+                            <form method="POST" action="{% url 'blog:comment' pk=object.pk %}">
+                                {% csrf_token %}
                                 <div class="row">
                                     <div class="col-lg-4 col-md-4">
-                                        <input type="text" placeholder="Name">
+                                        <input name="name" type="text" placeholder="Name">
                                     </div>
                                     <div class="col-lg-4 col-md-4">
-                                        <input type="text" placeholder="Email">
+                                        <input name="email" type="email" placeholder="Email">
                                     </div>
                                     <div class="col-lg-4 col-md-4">
-                                        <input type="text" placeholder="Phone">
+                                        <input name="phone" type="text" placeholder="Phone">
                                     </div>
                                     <div class="col-lg-12 text-center">
-                                        <textarea placeholder="Comment"></textarea>
+                                        <textarea name="message" placeholder="Comment"></textarea>
                                         <button type="submit" class="site-btn">Post Comment</button>
                                     </div>
                                 </div>
                             </form>
                         </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
     </section>
     <!-- Blog Details Section End -->
 {% endblock %}
